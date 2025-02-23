@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wood-o-Copter 3000</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.4); }
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body { 
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #1a1a2e);
+            color: #e0e0e0; 
+            text-align: center; 
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .header {
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4a90e2, transparent);
+            animation: glow 3s infinite;
+        }
+
+        h1 { 
+            font-size: 3em;
+            margin-bottom: 0.5em;
+            background: linear-gradient(45deg, #4a90e2, #63c9b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .tagline {
+            font-size: 1.4em;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            color: #8a9ab8;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s ease-out forwards 0.5s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #viewer { 
+            width: 100vw; 
+            height: 70vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .features { 
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* Changed from auto-fit to exactly 5 columns */
+            gap: 1rem; /* Reduced gap to fit all cards */
+            padding: 2rem;
+            max-width: 1400px; /* Increased max-width to accommodate all cards */
+            margin: 0 auto;
+        }
+
+        .feature { 
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1.5rem; /* Slightly reduced padding */
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: featureAppear 0.5s ease forwards;
+        }
+
+        @keyframes featureAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(74, 144, 226, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5em;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            color: #4a90e2;
+            font-size: 1.2em;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            color: #8a9ab8;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1200px) {
+            .features {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Wood-o-Copter 3000</h1>
+        <p class="tagline">The Future of Unconventional Transportation!</p>
+    </div>
+    
+    <div id="viewer"></div>
+    
+    <div class="features">
+        <div class="feature" style="animation-delay: 0.2s">
+            <div class="feature-icon">🌳</div>
+            <div class="feature-title">Eco-friendly Design</div>
+            <div class="feature-desc">Crafted from sustainable materials, our wooden body design is both environmentally conscious and aesthetically unique.</div>
+        </div>
+        
+        <div class="feature" style="animation-delay: 0.4s">
+            <div class="feature-icon">☀️</div>
+            <div class="feature-title">Solar Innovation</div>
+            <div class="feature-desc">Advanced solar panels harness the power of the sun, providing clean energy for your adventures.</div>
+        </div>
+        
+        <div class="feature" style="animation-delay: 0.6s">
+            <div class="feature-icon">🛩️</div>
+            <div class="feature-title">The best aerodynamics</div>
+            <div class="feature-desc">The steep rusty metal backrest combines retro aesthetics with surprisingly efficient aerodynamics.</div>
+        </div>
+        
+        <div class="feature" style="animation-delay: 0.8s">
+            <div class="feature-icon">🔄</div>
+            <div class="feature-title">Powerful Propulsion</div>
+            <div class="feature-desc">Our massive propeller delivers impressive thrust while maintaining a classic aviation feel.</div>
+        </div>
+        
+        <div class="feature" style="animation-delay: 1s">
+            <div class="feature-icon">🛞</div>
+            <div class="feature-title">Classic Mobility</div>
+            <div class="feature-desc">Hand-crafted wooden wheels provide a smooth ride with a touch of vintage charm.</div>
+        </div>
+    </div>
+
+    <script>
+        // Three.js Scene Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight * 0.7);
+        renderer.setClearColor(0x1a1a2e, 0);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.8;
+        renderer.outputEncoding = THREE.sRGBEncoding;
+        document.getElementById("viewer").appendChild(renderer.domElement);
+
+        // Enhanced Lighting
+        const mainLight = new THREE.DirectionalLight(0x4a90e2, 1.2);
+        mainLight.position.set(5, 5, 5);
+        scene.add(mainLight);
+        
+        const fillLight = new THREE.DirectionalLight(0x63c9b4, 0.8);
+        fillLight.position.set(-5, 2, -5);
+        scene.add(fillLight);
+
+        const topLight = new THREE.DirectionalLight(0xffffff, 0.6);
+        topLight.position.set(0, 10, 0);
+        scene.add(topLight);
+
+        const spotLight = new THREE.SpotLight(0x4a90e2, 1);
+        spotLight.position.set(3, 3, 3);
+        spotLight.angle = Math.PI / 4;
+        spotLight.penumbra = 0.5;
+        scene.add(spotLight);
+
+        scene.add(new THREE.AmbientLight(0x404040, 1.5));
+
+        // Model Loading with Enhanced Animation
+        const loader = new THREE.GLTFLoader();
+        loader.load('untitlasdasded.glb', function(gltf) {
+            const model = gltf.scene;
+            
+            const box = new THREE.Box3().setFromObject(model);
+            const center = box.getCenter(new THREE.Vector3());
+            model.position.sub(center);
+            
+            model.position.y = 0.1;
+            
+            const size = box.getSize(new THREE.Vector3());
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const scale = 8 / maxDim;
+            model.scale.setScalar(scale);
+            
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    child.material.roughness = 0.7;
+                    child.material.metalness = 0.6;
+                    child.material.envMapIntensity = 1.5;
+                }
+            });
+            
+            scene.add(model);
+
+            // Enhanced Animation Timeline
+            const tl = gsap.timeline({
+                defaults: { ease: "power2.out" }
+            });
+
+            tl.from(model.rotation, {
+                y: Math.PI * 2,
+                duration: 2
+            }).from(model.position, {
+                y: -5,
+                duration: 1.5,
+                ease: "bounce.out"
+            }, "-=1.5");
+
+            // Smooth Rotation Animation
+            let rotationSpeed = 0.005;
+            let targetY = 0;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                // Smooth rotation
+                model.rotation.y += rotationSpeed;
+                
+                // Floating animation
+                model.position.y = 0.1 + Math.sin(Date.now() * 0.001) * 0.2;
+                
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            // Interactive rotation on hover
+            const viewer = document.getElementById("viewer");
+            viewer.addEventListener("mousemove", (e) => {
+                const rect = viewer.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width * 2 - 1;
+                targetY = x * Math.PI / 4;
+                rotationSpeed = (targetY - model.rotation.y) * 0.05;
+            });
+        });
+
+        camera.position.set(10, 12, 1);
+        camera.lookAt(0, 3, 0);
+
+        // Responsive Design
+        window.addEventListener("resize", () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight * 0.7;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            
+            renderer.setSize(width, height);
+        });
+
+        // Feature Animation on Scroll
+        const features = document.querySelectorAll('.feature');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = `featureAppear 0.5s ease forwards ${entry.target.style.animationDelay}`;
+                }
+            });
+        }, { threshold: 0.1 });
+
+        features.forEach(feature => observer.observe(feature));
+    </script>
+</body>
+</html>
