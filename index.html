@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wood-o-Copter 3000</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         @keyframes float {
@@ -77,8 +75,8 @@
             }
         }
 
-        #viewer { 
-            width: 100vw; 
+        .gif-container { 
+            width: 100%;
             height: 70vh;
             display: flex;
             justify-content: center;
@@ -86,18 +84,27 @@
             position: relative;
         }
 
+        .product-gif {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(74, 144, 226, 0.2);
+            animation: float 6s ease-in-out infinite;
+        }
+
         .features { 
             display: grid;
-            grid-template-columns: repeat(5, 1fr); /* Changed from auto-fit to exactly 5 columns */
-            gap: 1rem; /* Reduced gap to fit all cards */
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
             padding: 2rem;
-            max-width: 1400px; /* Increased max-width to accommodate all cards */
+            max-width: 1400px;
             margin: 0 auto;
         }
 
         .feature { 
             background: rgba(255, 255, 255, 0.05);
-            padding: 1.5rem; /* Slightly reduced padding */
+            padding: 1.5rem;
             border-radius: 15px;
             backdrop-filter: blur(10px);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -146,6 +153,9 @@
             .features {
                 grid-template-columns: repeat(2, 1fr);
             }
+            .product-gif {
+                max-width: 90%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -161,7 +171,9 @@
         <p class="tagline">The Future of Unconventional Transportation!</p>
     </div>
     
-    <div id="viewer"></div>
+    <div class="gif-container">
+        <img src="0001-0063.gif" alt="Wood-o-Copter 3000 Animation" class="product-gif">
+    </div>
     
     <div class="features">
         <div class="feature" style="animation-delay: 0.2s">
@@ -196,119 +208,6 @@
     </div>
 
     <script>
-        // Three.js Scene Setup
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight * 0.7);
-        renderer.setClearColor(0x1a1a2e, 0);
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 0.8;
-        renderer.outputEncoding = THREE.sRGBEncoding;
-        document.getElementById("viewer").appendChild(renderer.domElement);
-
-        // Enhanced Lighting
-        const mainLight = new THREE.DirectionalLight(0x4a90e2, 1.2);
-        mainLight.position.set(5, 5, 5);
-        scene.add(mainLight);
-        
-        const fillLight = new THREE.DirectionalLight(0x63c9b4, 0.8);
-        fillLight.position.set(-5, 2, -5);
-        scene.add(fillLight);
-
-        const topLight = new THREE.DirectionalLight(0xffffff, 0.6);
-        topLight.position.set(0, 10, 0);
-        scene.add(topLight);
-
-        const spotLight = new THREE.SpotLight(0x4a90e2, 1);
-        spotLight.position.set(3, 3, 3);
-        spotLight.angle = Math.PI / 4;
-        spotLight.penumbra = 0.5;
-        scene.add(spotLight);
-
-        scene.add(new THREE.AmbientLight(0x404040, 1.5));
-
-        // Model Loading with Enhanced Animation
-        const loader = new THREE.GLTFLoader();
-        loader.load('untitlasdasded.glb', function(gltf) {
-            const model = gltf.scene;
-            
-            const box = new THREE.Box3().setFromObject(model);
-            const center = box.getCenter(new THREE.Vector3());
-            model.position.sub(center);
-            
-            model.position.y = 0.1;
-            
-            const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 8 / maxDim;
-            model.scale.setScalar(scale);
-            
-            model.traverse((child) => {
-                if (child.isMesh) {
-                    child.material.roughness = 0.7;
-                    child.material.metalness = 0.6;
-                    child.material.envMapIntensity = 1.5;
-                }
-            });
-            
-            scene.add(model);
-
-            // Enhanced Animation Timeline
-            const tl = gsap.timeline({
-                defaults: { ease: "power2.out" }
-            });
-
-            tl.from(model.rotation, {
-                y: Math.PI * 2,
-                duration: 2
-            }).from(model.position, {
-                y: -5,
-                duration: 1.5,
-                ease: "bounce.out"
-            }, "-=1.5");
-
-            // Smooth Rotation Animation
-            let rotationSpeed = 0.005;
-            let targetY = 0;
-
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                // Smooth rotation
-                model.rotation.y += rotationSpeed;
-                
-                // Floating animation
-                model.position.y = 0.1 + Math.sin(Date.now() * 0.001) * 0.2;
-                
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            // Interactive rotation on hover
-            const viewer = document.getElementById("viewer");
-            viewer.addEventListener("mousemove", (e) => {
-                const rect = viewer.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width * 2 - 1;
-                targetY = x * Math.PI / 4;
-                rotationSpeed = (targetY - model.rotation.y) * 0.05;
-            });
-        });
-
-        camera.position.set(10, 12, 1);
-        camera.lookAt(0, 3, 0);
-
-        // Responsive Design
-        window.addEventListener("resize", () => {
-            const width = window.innerWidth;
-            const height = window.innerHeight * 0.7;
-            
-            camera.aspect = width / height;
-            camera.updateProjectionMatrix();
-            
-            renderer.setSize(width, height);
-        });
-
         // Feature Animation on Scroll
         const features = document.querySelectorAll('.feature');
         const observer = new IntersectionObserver((entries) => {
